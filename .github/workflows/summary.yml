@@ -1,0 +1,22 @@
+name: Portfolio Summary
+
+on:
+  schedule:
+    - cron: '0 0 * * 6'  # 土曜日 09:00 JST
+  workflow_dispatch:
+
+jobs:
+  summary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install yfinance pandas requests
+      - name: Run Portfolio Summary
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: python portfolio_summary.py
