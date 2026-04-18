@@ -1,3 +1,4 @@
+import pandas as pd
 import os
 import json
 import requests
@@ -49,10 +50,10 @@ def fetch_positions(repo: str) -> list:
 def get_current_price(ticker: str) -> float | None:
     """yfinanceで現在値を取得"""
     try:
-        df = yf.download(ticker, period="5d", progress=False, auto_adjust=True)
+        df = yf.download(ticker, period="5d", progress=False)
         if df.empty:
             return None
-        if hasattr(df.columns, 'get_level_values'):
+        if isinstance(df.columns, pd.MultiIndex):
             df.columns = df.columns.get_level_values(0)
         return float(df["Close"].iloc[-1])
     except:
@@ -102,9 +103,13 @@ def main():
 
         lines = []
         for p in positions:
-            ticker      = p["ticker"]
-            name        = p.get("name", ticker)
-            entry_price = float(p["entry_price"])
+            try:
+                ticker      = p["ticker"]
+                name        = p.get("name", ticker)
+                entry_price = float(p["entry_price"])
+            except (KeyError, ValueError) as e:
+                print(f"  スキップ（不正データ）: {e}")
+                continue
             entry_date  = p.get("entry_date", "")
 
             current_price = get_current_price(ticker)
