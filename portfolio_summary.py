@@ -50,13 +50,16 @@ def fetch_positions(repo: str) -> list:
 def get_current_price(ticker: str) -> float | None:
     """yfinanceで現在値を取得"""
     try:
-        df = yf.download(ticker, period="5d", progress=False)
+        df = yf.download(ticker, period="5d", progress=False, auto_adjust=False)
         if df.empty:
             return None
         if isinstance(df.columns, pd.MultiIndex):
             df.columns = df.columns.get_level_values(0)
-        return float(df["Close"].iloc[-1])
-    except:
+        close = df["Close"].dropna()
+        if close.empty:
+            return None
+        return float(close.iloc[-1])
+    except Exception:
         return None
 
 
@@ -73,7 +76,7 @@ def main():
     for strategy, repo in STRATEGY_REPOS.items():
         positions = fetch_positions(repo)
         for p in positions:
-            p.setdefault("strategy", strategy)  # strategyフィールドない場合は補完
+            p.setdefault("strategy", strategy)
         all_positions[strategy] = positions
         total_count += len(positions)
         print(f"  {strategy}: {len(positions)}件")
@@ -107,30 +110,34 @@ def main():
                 ticker      = p["ticker"]
                 name        = p.get("name", ticker)
                 entry_price = float(p["entry_price"])
-            except (KeyError, ValueError) as e:
-                print(f"  スキップ（不正データ）: {e}")
+                if entry_price == 0:
+                    print(f"  スキップ（entry_price=0）: {ticker}")
+                    continue
+                entry_date = p.get("entry_date", "")
+
+                current_price = get_current_price(ticker)
+                if current_price is None:
+                    lines.append(f"　❓ {name}（{ticker}）— データ取得失敗")
+                    continue
+
+                profit_pct = (current_price - entry_price) / entry_price * 100
+
+                try:
+                    entry_dt  = datetime.strptime(entry_date, "%Y-%m-%d")
+                    days_held = (datetime.now() - entry_dt).days
+                except Exception:
+                    days_held = 0
+
+                icon = "🚀" if profit_pct > 5 else "✅" if profit_pct > 0 else "⚠️"
+                lines.append(
+                    f"　{icon} {name}（{ticker}）  {profit_pct:+.1f}%  /  {days_held}日目"
+                )
+                total_profit_sum += profit_pct
+                total_pos_count  += 1
+
+            except Exception as e:
+                print(f"  スキップ（エラー）{p.get('ticker', '?')}: {e}")
                 continue
-            entry_date  = p.get("entry_date", "")
-
-            current_price = get_current_price(ticker)
-            if current_price is None:
-                lines.append(f"　❓ {name}（{ticker}）— データ取得失敗")
-                continue
-
-            profit_pct = (current_price - entry_price) / entry_price * 100
-
-            try:
-                entry_dt  = datetime.strptime(entry_date, "%Y-%m-%d")
-                days_held = (datetime.now() - entry_dt).days
-            except:
-                days_held = 0
-
-            icon = "🚀" if profit_pct > 5 else "✅" if profit_pct > 0 else "⚠️"
-            lines.append(
-                f"　{icon} {name}（{ticker}）  {profit_pct:+.1f}%  /  {days_held}日目"
-            )
-            total_profit_sum += profit_pct
-            total_pos_count  += 1
 
         msg_sections.append(
             f"**{label} ({len(positions)}件)**\n" + "\n".join(lines)
