@@ -1,10 +1,10 @@
 name: Discord Reaction Poll
 
 on:
-  schedule:
-    - cron: '30 3 * * 1-5'   # 12:30 JST
-    - cron: '0  4 * * 1-5'   # 13:00 JST
-    - cron: '30 8 * * 1-5'   # 17:30 JST
+  #schedule:
+  # - cron: '30 3 * * 1-5'   # 12:30 JST
+  # - cron: '0  4 * * 1-5'   # 13:00 JST
+  # - cron: '30 8 * * 1-5'   # 17:30 JST
   workflow_dispatch:
 
 jobs:
