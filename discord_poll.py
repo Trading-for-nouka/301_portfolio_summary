@@ -84,6 +84,9 @@ def put_github_positions(repo, positions, sha, commit_msg):
     r = requests.put(url, headers=GH, json=payload, timeout=10)
     return r.status_code in (200, 201)
 
+def send_discord_message(content):
+    url = f"https://discord.com/api/v10/channels/{DISCORD_CHANNEL_ID}/messages"
+    requests.post(url, headers=DH, json={"content": content}, timeout=10)
 
 def main():
     processed = load_processed()
@@ -142,8 +145,12 @@ def main():
             f"Add position: {data['ticker']} [{data['strategy']}]"
         )
         if ok:
-            print(f"  \u2705 \u8ffd\u52a0: {data['ticker']} \u2192 {repo}")
+            print(f"  ✅ 追加: {data['ticker']} → {repo}")
             added += 1
+            send_discord_message(
+                f"✅ **{data['name']}（{data['ticker']}）** を {data['strategy']} に記録しました\n"
+                f"　 📌 エントリー: {data['entry_price']}円 | 🛑 損切: {data['stop_loss']}円"
+            )
         else:
             print(f"  \u274c \u66f8\u304d\u8fbc\u307f\u5931\u6557: {data['ticker']}")
 
