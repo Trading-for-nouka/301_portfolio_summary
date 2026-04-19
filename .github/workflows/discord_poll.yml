@@ -1,0 +1,35 @@
+name: Discord Reaction Poll
+
+on:
+  schedule:
+    - cron: '30 3 * * 1-5'   # 12:30 JST
+    - cron: '0  4 * * 1-5'   # 13:00 JST
+    - cron: '30 8 * * 1-5'   # 17:30 JST
+  workflow_dispatch:
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: Poll Discord reactions
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: python discord_poll.py
+      - name: Commit processed_ids.json
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add processed_ids.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Update processed_ids [skip ci]"
+            git push origin HEAD
+          fi
