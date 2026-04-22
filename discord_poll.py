@@ -36,6 +36,8 @@ def save_processed(ids):
 def get_messages():
     url = f"https://discord.com/api/v10/channels/{DISCORD_CHANNEL_ID}/messages?limit=50"
     r = requests.get(url, headers=DH, timeout=10)
+    print(f"Messages API status: {r.status_code}")
+    print(f"Messages API response: {r.text[:300]}")
     return r.json() if r.status_code == 200 else []
 
 
