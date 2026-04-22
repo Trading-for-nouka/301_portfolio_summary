@@ -91,25 +91,7 @@ def send_discord_message(content):
     requests.post(url, headers=DH, json={"content": content}, timeout=10)
 
 def main():
-    
-    # ↓ デバッグ用（確認後削除）
-    messages = get_messages()
-    print(f"取得メッセージ数: {len(messages)}")
-    for msg in messages:
-        content = msg.get("content", "")
-        if "📎" in content or "🛒" in content:
-            mid = msg["id"]
-            print(f"\n--- メッセージID: {mid} ---")
-            print(f"内容: {content[:100]}")
-            # リアクション確認
-            encoded = requests.utils.quote("\U0001f6d2")
-            url = f"<https://discord.com/api/v10/channels/{DISCORD_CHANNEL_ID}/messages/{mid}/reactions/{encoded}>"
-            r = requests.get(url, headers=DH, timeout=10)
-            print(f"リアクションAPI status: {r.status_code}")
-            print(f"リアクション内容: {r.text[:200]}")
-    return
-    # ↑ ここまでデバッグ用
-    
+   
     processed = load_processed()
     messages  = get_messages()
     new_ids   = set(processed)
