@@ -14,6 +14,7 @@ STRATEGY_REPOS = {
     "dip":      "trading-for-nouka/202_dip",
     "nr4":      "trading-for-nouka/203_nr4",
     "rebound":  "trading-for-nouka/204_rebound",
+    "rs":       "trading-for-nouka/211_rs",
 }
 
 STRATEGY_LABELS = {
@@ -21,6 +22,7 @@ STRATEGY_LABELS = {
     "dip":      "📉 押し目",
     "nr4":      "📦 NR4",
     "rebound":  "🔄 リバウンド",
+    "rs":       "📈 RSモメンタム",
 }
 
 
