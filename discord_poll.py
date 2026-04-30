@@ -140,6 +140,7 @@ def main():
             "highest_price": data["entry_price"],
             "stop_loss":     data["stop_loss"],
             "strategy":      data["strategy"],
+            "profit_exceeded_3pct": False,
         }
         positions.append(new_pos)
 
