@@ -15,6 +15,13 @@ STRATEGY_REPOS = {
     "rs":       "trading-for-nouka/211_rs",
 }
 
+POSITIONS_FILE_MAP = {
+    "trading-for-nouka/201_breakout": "breakout_positions.json",
+    "trading-for-nouka/202_dip":      "dip_positions.json",
+    "trading-for-nouka/204_rebound":  "positions.json",
+    "trading-for-nouka/211_rs":       "rs_positions.json",
+}
+
 DH = {"Authorization": f"Bot {DISCORD_BOT_TOKEN}"}
 GH = {"Authorization": f"token {PAT_TOKEN}", "Accept": "application/vnd.github.v3+json"}
 
@@ -66,7 +73,9 @@ def parse_data_line(content):
 
 
 def get_github_positions(repo):
-    url = f"https://api.github.com/repos/{repo}/contents/positions.json"
+    positions_file = POSITIONS_FILE_MAP.get(repo, "positions.json")
+    url = f"https://api.github.com/repos/{repo}/contents/{positions_file}"
+
     r = requests.get(url, headers=GH, timeout=10)
     if r.status_code == 200:
         d = r.json()
@@ -75,8 +84,10 @@ def get_github_positions(repo):
     return [], None
 
 
-def put_github_positions(repo, positions, sha, commit_msg):
-    url = f"https://api.github.com/repos/{repo}/contents/positions.json"
+def put_github_s(repo, s, sha, commit_msg):
+    positions_file = POSITIONS_FILE_MAP.get(repo, "positions.json")
+    url = f"https://api.github.com/repos/{repo}/contents/{positions_file}"
+
     encoded = base64.b64encode(
         json.dumps(positions, ensure_ascii=False, indent=2).encode()
     ).decode()
