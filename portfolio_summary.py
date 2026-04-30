@@ -17,6 +17,13 @@ STRATEGY_REPOS = {
     "rs":       "trading-for-nouka/211_rs",
 }
 
+POSITIONS_FILE_MAP = {
+    "trading-for-nouka/201_breakout": "breakout_positions.json",
+    "trading-for-nouka/202_dip":      "dip_positions.json",
+    "trading-for-nouka/204_rebound":  "positions.json",
+    "trading-for-nouka/211_rs":       "rs_positions.json",
+}
+
 STRATEGY_LABELS = {
     "breakout": "🚀 ブレイクアウト",
     "dip":      "📉 押し目",
@@ -28,7 +35,9 @@ STRATEGY_LABELS = {
 
 def fetch_positions(repo: str) -> list:
     """PAT_TOKEN経由で各戦略リポジトリの positions.json を取得"""
-    url = f"https://api.github.com/repos/{repo}/contents/positions.json"
+    positions_file = POSITIONS_FILE_MAP.get(repo, "positions.json")
+    url = f"https://api.github.com/repos/{repo}/contents/{positions_file}"
+
     headers = {
         "Authorization": f"token {PAT_TOKEN}",
         "Accept": "application/vnd.github.v3.raw"
