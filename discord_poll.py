@@ -163,7 +163,7 @@ def main():
             print(f"  ✅ 追加: {data['ticker']} → {repo}")
             added += 1
             send_discord_message(
-                f"✅ **{data['name']}（{data['ticker']}）** を {data['strategy']} に記録しました\n"
+                f"[301_portfolio_summary] ✅ **{data['name']}（{data['ticker']}）** を {data['strategy']} に記録しました\n"
                 f"　 📌 エントリー: {data['entry_price']}円 | 🛑 損切: {data['stop_loss']}円"
             )
         else:
