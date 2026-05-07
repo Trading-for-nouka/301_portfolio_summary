@@ -94,7 +94,7 @@ def main():
 
     if total_count == 0:
         msg = (
-            f"📊 **週刊ポートフォリオサマリー — {today_str}**\n"
+            f"[301_portfolio_summary] 📊 **週刊ポートフォリオサマリー — {today_str}**\n"
             f"保有ポジションなし\n"
             f"🕒 {jst.strftime('%Y/%m/%d %H:%M')} JST"
         )
@@ -157,7 +157,7 @@ def main():
     avg_profit = total_profit_sum / total_pos_count if total_pos_count > 0 else 0.0
     profit_icon = "💰" if avg_profit >= 0 else "📉"
 
-    msg  = f"📊 **週刊ポートフォリオサマリー — {today_str}**\n"
+    msg  = f"[301_portfolio_summary] 📊 **週刊ポートフォリオサマリー — {today_str}**\n"
     msg += "━" * 20 + "\n"
     msg += "\n\n".join(msg_sections)
     msg += "\n" + "━" * 20 + "\n"
